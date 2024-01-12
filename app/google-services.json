@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "908940586764",
+    "project_id": "mobileshop-ceef3",
+    "storage_bucket": "mobileshop-ceef3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908940586764:android:1a666ec7a1e6229c52a329",
+        "android_client_info": {
+          "package_name": "com.example.mobileshop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc1vUPjtPqUBhzU17H1grgXRKoHrzzQjw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

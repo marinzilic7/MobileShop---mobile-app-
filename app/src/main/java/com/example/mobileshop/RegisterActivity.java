@@ -4,19 +4,28 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RegisterActivity extends AppCompatActivity {
+import com.example.mobileshop.models.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+public class RegisterActivity extends AppCompatActivity {
+    private FirebaseAuth firebaseAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.registerlayout);
 
+
+        firebaseAuth = FirebaseAuth.getInstance();
         TextView loginBtn = findViewById(R.id.loginBtn);
         Button registerButton = findViewById(R.id.registerButton);
 
@@ -39,17 +48,32 @@ public class RegisterActivity extends AppCompatActivity {
         String name = firstName.getText().toString();
         String surname = lastName.getText().toString();
         String emailUser = email.getText().toString();
-        String passwordUser = email.getText().toString();
+        String passwordUser = password.getText().toString();
 
-        if(name.isEmpty()) {
-            Toast.makeText(this, "Unesite vase ime", Toast.LENGTH_SHORT).show();
-        }else if(surname.isEmpty()){
-            Toast.makeText(this, "Unesite vase prezime", Toast.LENGTH_SHORT).show();
-        }else if(emailUser.isEmpty()){
-            Toast.makeText(this, "Unesite vas email", Toast.LENGTH_SHORT).show();
+        if(name.isEmpty() || surname.isEmpty() || emailUser.isEmpty() || passwordUser.isEmpty()){
+            Toast.makeText(this, "Molimo popunite sva polja", Toast.LENGTH_SHORT).show();
+            return;
         }else{
-            Toast.makeText(this, "Unesite vasu lozinku", Toast.LENGTH_SHORT).show();
+            firebaseAuth.createUserWithEmailAndPassword(emailUser,passwordUser).addOnCompleteListener(this,task->{
+                if(task.isSuccessful()){
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                    User member = new User(name,surname,emailUser,passwordUser);
+                    String userId = user.getUid();
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
+                    databaseReference.child(user.getUid()).setValue(member);
+                    Toast.makeText(this, "Uspjesno ste se registrirali", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else{
+                    String error = task.getException().getMessage();
+                    Log.e("RegisterActivity", "Registration failed" + task.getException().getMessage());
+                    Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
+
 
     }
 

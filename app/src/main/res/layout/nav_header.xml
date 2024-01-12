@@ -1,0 +1,40 @@
+<!-- res/layout/nav_header.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+    <ImageView
+        android:id="@+id/header_image"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="Profile Image" />
+
+    <TextView
+        android:id="@+id/header_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Korisničko ime"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/header_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="user@example.com"
+        android:textColor="@android:color/white"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

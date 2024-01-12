@@ -48,7 +48,7 @@
 
 
     <EditText
-        android:id="@+id/editTextText"
+        android:id="@+id/first_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -72,10 +72,10 @@
         android:text="LAST NAME"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+        app:layout_constraintTop_toBottomOf="@+id/first_name" />
 
     <EditText
-        android:id="@+id/editTextText2"
+        android:id="@+id/last_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -99,17 +99,17 @@
         android:text="EMAIL"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextText2" />
+        app:layout_constraintTop_toBottomOf="@+id/last_name" />
 
     <EditText
-        android:id="@+id/editTextTextEmail"
+        android:id="@+id/emailUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/input"
-        android:inputType="text"
+        android:inputType="textEmailAddress"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -125,24 +125,24 @@
         android:fontFamily="@font/lexend_deca"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/emailUser" />
 
     <EditText
-        android:id="@+id/editTextTextPassword"
+        android:id="@+id/passwordUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/input"
-        android:inputType="text"
+        android:inputType="textPassword"
         android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/registerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -152,11 +152,12 @@
         android:fontFamily="@font/lexend_deca"
         android:padding="10dp"
         android:text="LOGIN"
+        android:onClick="registerButton"
         android:textStyle="bold"
         app:cornerRadius="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/passwordUser" />
 
     <LinearLayout
         android:layout_width="wrap_content"

@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
-        closeDrawer();
+
     }
 
     public void openDrawer(View view) {

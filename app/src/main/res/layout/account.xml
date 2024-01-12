@@ -90,6 +90,7 @@
                 android:fontFamily="@font/lexend_deca"
                 android:paddingTop="10dp"
                 android:text="Uredi profil"
+                android:onClick="updateProfile"
                 android:textSize="16dp" />
         </LinearLayout>
 

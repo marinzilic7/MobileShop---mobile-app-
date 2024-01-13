@@ -12,10 +12,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
 
     private DrawerLayout drawer;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,18 +36,31 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
+    public void logoutUser(){
+        auth = FirebaseAuth.getInstance();
+        auth.signOut();
+        Toast.makeText(this, "Uspješno ste se odjavili", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
     public void handleNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         final int ACCOUNT_MENU_ID = R.id.account;
+        final int LOGOUT_MENU_ID = R.id.logout;
 
         if (id == ACCOUNT_MENU_ID) {
             Intent intent = new Intent(this, AccountActivity.class);
             startActivity(intent);
+        }else if(id == LOGOUT_MENU_ID){
+            logoutUser();
         }
 
 
     }
+
+
 
     public void openDrawer(View view) {
         drawer.openDrawer(GravityCompat.START);

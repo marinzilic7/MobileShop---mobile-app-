@@ -15,25 +15,23 @@
         android:text="UPIŠITE VAŠU NOVU LOZINKU"
         />
 
-<EditText
-android:id="@+id/novaLozinka"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:background="@drawable/input"
-android:padding="10dp"
+    <EditText
+    android:id="@+id/updatePassword"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/input"
+    android:padding="10dp"
     android:layout_marginTop="10dp"
-android:inputType="textPassword"
-    android:onClick="potvrdiReset"
-android:layout_gravity="center_vertical" />
+    android:inputType="textPassword"
+    android:layout_gravity="center_vertical" />
 
     <Button
-        android:id="@+id/loginUser"
+        android:id="@+id/changePassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
         android:layout_marginTop="14dp"
         android:fontFamily="@font/lexend_deca"
-        android:onClick="confirmReset"
         android:padding="10dp"
         android:text="POTVRDI"
         android:textStyle="bold"

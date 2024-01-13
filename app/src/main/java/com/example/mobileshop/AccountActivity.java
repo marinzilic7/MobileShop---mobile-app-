@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +32,7 @@ public class AccountActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private  DrawerLayout drawer;
     private DatabaseReference databaseReference;
+    private EditText novaLozinka;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,29 +67,30 @@ public class AccountActivity extends AppCompatActivity {
 
     }
 
-    public void potvrdiReset(View view){
-        EditText novaLozinka = findViewById(R.id.novaLozinka);
-        String lozinka = novaLozinka.getText().toString();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(lozinka.isEmpty()){
-            Toast.makeText(this, "Molimo unesite novu lozinku", Toast.LENGTH_SHORT).show();
-            return;
-        }else{
-            user.updatePassword(lozinka).addOnCompleteListener(new OnCompleteListener<Void>() {
+    public void confirmReset(View view) {
+        FirebaseUser user = auth.getCurrentUser();
+        if (novaLozinka != null) {
+            String password = novaLozinka.getText().toString();
+
+            assert user != null;
+            user.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
-                    if(task.isSuccessful()){
-                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(user.getUid());
-                        databaseReference.child("password").setValue(lozinka);
-                        Toast.makeText(AccountActivity.this, "Promijenjena lozinka", Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(AccountActivity.this, "Greska", Toast.LENGTH_SHORT).show();
+                    if (task.isSuccessful()) {
+                        Toast.makeText(AccountActivity.this, "Uspješno ste promijenili lozinku", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(AccountActivity.this, HomeActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(AccountActivity.this, "Greška prilikom promjene lozinke", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
+        } else {
+            Toast.makeText(AccountActivity.this, "EditText za lozinku je null", Toast.LENGTH_SHORT).show();
         }
-
     }
+
+
 
     public void updateProfile(View view){
         openModal();
@@ -96,8 +99,19 @@ public class AccountActivity extends AppCompatActivity {
     private void openModal(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View DialogView = inflater.inflate(R.layout.modal, null);
-        builder.setView(DialogView);
+        View dialogView = inflater.inflate(R.layout.modal, null); // Promijenite ovdje ime izgleda
+        builder.setView(dialogView);
+
+        // Pronađite EditText unutar uključenog izgleda
+        novaLozinka = dialogView.findViewById(R.id.updatePassword);
+        Button changePasswordButton = dialogView.findViewById(R.id.changePassword);
+
+        changePasswordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmReset(v);
+            }
+        });
         AlertDialog dialog = builder.create();
         dialog.show();
     }

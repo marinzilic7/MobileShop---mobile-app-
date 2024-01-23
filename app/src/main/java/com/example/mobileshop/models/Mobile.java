@@ -9,6 +9,8 @@ public class Mobile {
     public String cijena;
     public String slika;
 
+    public Mobile() {
+    }
 
     public Mobile(String id, String imeMobitela, String model, String cijena, String slika) {
         this.id = id;
@@ -18,4 +20,43 @@ public class Mobile {
         this.slika = slika;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getImeMobitela() {
+        return imeMobitela;
+    }
+
+    public void setImeMobitela(String imeMobitela) {
+        this.imeMobitela = imeMobitela;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getCijena() {
+        return cijena;
+    }
+
+    public void setCijena(String cijena) {
+        this.cijena = cijena;
+    }
+
+    public String getSlika() {
+        return slika;
+    }
+
+    public void setSlika(String slika) {
+        this.slika = slika;
+    }
 }

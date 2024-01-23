@@ -5,11 +5,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.mobileshop.adapters.MobileAdapter;
 import com.example.mobileshop.models.Mobile;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageReference;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,16 +35,19 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class HomeActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private Uri imageUri; // Dodajte ovu liniju
+    private Uri imageUri;
+    private MobileAdapter mobileAdapter;
 
     private DrawerLayout drawer;
     private FirebaseAuth auth;
-
+    private List<Mobile> mobileList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +60,36 @@ public class HomeActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 handleNavigationItemSelected(item);
                 return true;
+            }
+        });
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerViewMenu);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
+        DatabaseReference menuRef = FirebaseDatabase.getInstance().getReference("mobile");
+
+        mobileAdapter = new MobileAdapter(mobileList, menuRef);
+        recyclerView.setAdapter(mobileAdapter);
+
+        menuRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Mobile> allMenuList = new ArrayList<>();
+
+                for (DataSnapshot menuSnapshot : dataSnapshot.getChildren()) {
+                    Mobile menu = menuSnapshot.getValue(Mobile.class);
+                    if (menu != null) {
+                        allMenuList.add(menu);
+                    }
+                }
+
+                RecyclerView recyclerView = findViewById(R.id.recyclerViewMenu);
+                MobileAdapter menuAdapter = new MobileAdapter(allMenuList, menuRef);
+                recyclerView.setAdapter(menuAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle potential errors here
             }
         });
     }
@@ -156,7 +195,7 @@ public class HomeActivity extends AppCompatActivity {
                                                     base.child(itemId).setValue(mobile);
 
 
-                                                    Toast.makeText(HomeActivity.this, "Successful added", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(HomeActivity.this, "Mobitel dodan", Toast.LENGTH_SHORT).show();
                                                     dialog.dismiss();
                                                 }
                                             });

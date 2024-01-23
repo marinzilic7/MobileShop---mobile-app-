@@ -3,6 +3,7 @@ package com.example.mobileshop;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuAdapter;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -62,6 +63,8 @@ public class HomeActivity extends AppCompatActivity {
                 return true;
             }
         });
+        
+        
 
         RecyclerView recyclerView = findViewById(R.id.recyclerViewMenu);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 1));
@@ -79,12 +82,13 @@ public class HomeActivity extends AppCompatActivity {
                     Mobile menu = menuSnapshot.getValue(Mobile.class);
                     if (menu != null) {
                         allMenuList.add(menu);
+                        mobileAdapter.notifyDataSetChanged();
                     }
                 }
 
                 RecyclerView recyclerView = findViewById(R.id.recyclerViewMenu);
-                MobileAdapter menuAdapter = new MobileAdapter(allMenuList, menuRef);
-                recyclerView.setAdapter(menuAdapter);
+                MobileAdapter mobileAdapter = new MobileAdapter(allMenuList, menuRef);
+                recyclerView.setAdapter(mobileAdapter);
             }
 
             @Override
@@ -93,6 +97,35 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void mobileBtn(View view){
+        DatabaseReference menuRef = FirebaseDatabase.getInstance().getReference("menu");
+        menuRef.orderByChild("category").equalTo("food").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Mobile> filteredMenuList = new ArrayList<>();
+
+                for (DataSnapshot menuSnapshot : dataSnapshot.getChildren()) {
+                    Mobile menu = menuSnapshot.getValue(Mobile.class);
+                    if (menu != null) {
+                        filteredMenuList.add(menu);
+                    }
+                }
+                RecyclerView recyclerView = findViewById(R.id.recyclerViewMenu);
+                MobileAdapter mobileAdapter = new MobileAdapter(filteredMenuList,menuRef);
+                recyclerView.setAdapter(mobileAdapter);
+                mobileAdapter.updateData(filteredMenuList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Obrada grešaka
+            }
+        });
+    }
+
+
+
 
     public void logoutUser(){
         auth = FirebaseAuth.getInstance();
@@ -107,16 +140,27 @@ public class HomeActivity extends AppCompatActivity {
 
         final int ACCOUNT_MENU_ID = R.id.account;
         final int LOGOUT_MENU_ID = R.id.logout;
+        final int MOBILE_MENU_ID = R.id.mobile;
+        final int CART_MENU_ID = R.id.kosarica;
 
         if (id == ACCOUNT_MENU_ID) {
             Intent intent = new Intent(this, AccountActivity.class);
             startActivity(intent);
         }else if(id == LOGOUT_MENU_ID){
             logoutUser();
+        }else if(id == MOBILE_MENU_ID){
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            mobileBtn(null);
+        }else if(id == CART_MENU_ID){
+            Intent intent = new Intent(this, KosaricaActivity.class);
+            startActivity(intent);
         }
 
 
     }
+    
+
 
 
 

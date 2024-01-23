@@ -1,21 +1,40 @@
 package com.example.mobileshop;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.mobileshop.models.Mobile;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.StorageReference;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
-
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.InputStream;
+import java.util.UUID;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri imageUri; // Dodajte ovu liniju
 
     private DrawerLayout drawer;
     private FirebaseAuth auth;
@@ -71,4 +90,102 @@ public class HomeActivity extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
         }
     }
+
+    public void addMobile(View view){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.add_mobile, null);
+
+        EditText imeMobitela = dialogView.findViewById(R.id.nazivMobitela);
+        EditText model = dialogView.findViewById(R.id.modelMobitela);
+        EditText cijena = dialogView.findViewById(R.id.cijenaMobitela);
+        EditText slika = dialogView.findViewById(R.id.slikaMobitela);
+
+        slika.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, PICK_IMAGE_REQUEST);
+            }
+        });
+
+        builder.setView(dialogView)
+                .setTitle("Add item")
+                .setPositiveButton("OK", null) // Ne postavljamo OnClickListener ovdje
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    // Logika za negativan odgovor
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String name = imeMobitela.getText().toString();
+                        String model_mobile = model.getText().toString();
+                        String price_mobile  = cijena.getText().toString();
+
+                        if (name.isEmpty()) {
+                            Toast.makeText(view.getContext(), "Ime je obavezno", Toast.LENGTH_SHORT).show();
+                        } else if (price_mobile.isEmpty()) {
+                            Toast.makeText(view.getContext(), "Cijena je obavezna", Toast.LENGTH_SHORT).show();
+                        } else if (model_mobile.isEmpty()) {
+                            Toast.makeText(view.getContext(), "Model je obavezan", Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (imageUri != null) {
+                                StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("images");
+                                StorageReference imageRef = mStorageRef.child(UUID.randomUUID().toString());
+
+                                try {
+                                    InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                                    UploadTask uploadTask = imageRef.putStream(inputStream);
+                                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                            imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                @Override
+                                                public void onSuccess(Uri uri) {
+                                                    String imageUrl = uri.toString();
+
+                                                    DatabaseReference base = FirebaseDatabase.getInstance().getReference("mobile");
+                                                    String itemId = base.push().getKey();
+                                                    Mobile mobile = new Mobile(itemId, name, model_mobile, price_mobile, imageUrl);
+                                                    base.child(itemId).setValue(mobile);
+
+
+                                                    Toast.makeText(HomeActivity.this, "Successful added", Toast.LENGTH_SHORT).show();
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                        }
+                                    });
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Toast.makeText(view.getContext(), "Slika je obavezna", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        dialog.show();
+
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+        }
+    }
+
 }
